@@ -2,6 +2,8 @@
 - name: Deploy to K3s
   hosts: k3s_servers
   become: true
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   tasks:
     - name: Pull latest code from GitHub
       ansible.builtin.git:
@@ -13,22 +15,16 @@
     - name: Delete existing deployment (if exists)
       ansible.builtin.shell: |
         kubectl delete deployment email-check --ignore-not-found=true --force
-      environment:
-        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
       changed_when: true
 
     - name: Delete existing service (if exists)
       ansible.builtin.shell: |
         kubectl delete service email-check-service --ignore-not-found=true --force
-      environment:
-        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
       changed_when: true
 
     - name: Delete existing HPA (if exists)
       ansible.builtin.shell: |
         kubectl delete hpa email-check-hpa --ignore-not-found=true --force
-      environment:
-        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
       changed_when: true
 
     # - name: Wait for resources to be fully deleted
@@ -42,28 +38,20 @@
     - name: Apply fresh Kubernetes manifests
       ansible.builtin.shell: |
         kubectl apply -f /root/K8s-Project/k8s/k8s.yml
-      environment:
-        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
       changed_when: true
 
     - name: Wait for deployment to be ready
       ansible.builtin.shell: |
         kubectl rollout status deployment/email-check --timeout=300s
-      environment:
-        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
       changed_when: false
 
     - name: Wait for pods to be running
       ansible.builtin.shell: |
         kubectl wait --for=condition=ready pod -l app=email-check --timeout=120s
-      environment:
-        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
       changed_when: false
 
     - name: Check deployment status
       ansible.builtin.command: kubectl get pods -l app=email-check
-      environment:
-        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
       register: pod_status
       changed_when: false
 
@@ -71,17 +59,15 @@
       ansible.builtin.debug:
         msg: "{{ pod_status.stdout }}"
 
-    - name: Check HPA status
-      ansible.builtin.command: kubectl get hpa
-      environment:
-        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-      register: hpa_status
-      changed_when: false
-
     - name: Wait for HPA to stabilize
       ansible.builtin.pause:
         seconds: 60
         prompt: "Waiting for HPA metrics to initialize..."
+
+    - name: Check HPA status
+      ansible.builtin.command: kubectl get hpa
+      register: hpa_status
+      changed_when: false
 
     - name: Show HPA status
       ansible.builtin.debug:
@@ -89,8 +75,6 @@
 
     - name: Get service information
       ansible.builtin.command: kubectl get svc email-check-service
-      environment:
-        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
       register: service_status
       changed_when: false
 
