@@ -78,6 +78,11 @@
       register: hpa_status
       changed_when: false
 
+    - name: Wait for HPA to stabilize
+      ansible.builtin.pause:
+        seconds: 60
+        prompt: "Waiting for HPA metrics to initialize..."
+
     - name: Show HPA status
       ansible.builtin.debug:
         msg: "{{ hpa_status.stdout }}"
