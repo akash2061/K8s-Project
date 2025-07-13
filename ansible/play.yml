@@ -1,0 +1,26 @@
+---
+- name: Deploy to K3s
+  hosts: localhost
+  become: true
+  tasks:
+    - name: Pull latest code from GitHub
+      ansible.builtin.git:
+        repo: https://github.com/akash2061/K8s-Project.git
+        dest: /root/K8s-Project
+        force: true
+        version: main
+
+    - name: Apply Kubernetes manifests
+      kubernetes.core.k8s:
+        kubeconfig: /etc/rancher/k3s/k3s.yaml
+        state: present
+        src: /root/K8s-Project/k8s/k8s.yml
+
+    - name: Check deployment status
+      ansible.builtin.command: kubectl get pods -l app=email-check
+      register: pod_status
+      changed_when: false
+
+    - name: Show deployment status
+      ansible.builtin.debug:
+        msg: "{{ pod_status.stdout }}"

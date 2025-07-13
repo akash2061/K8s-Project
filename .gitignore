@@ -1,0 +1,30 @@
+# Ansible
+.ansible/
+*.retry
+ansible.log
+.vault_pass
+
+# SSH keys and sensitive files
+*.pem
+*.key
+id_rsa*
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+
+# Kubernetes secrets
+*secret*.yaml
+*secret*.yml

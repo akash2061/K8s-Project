@@ -1,0 +1,35 @@
+name: Deploy to K3s
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "App/**"
+      - "k8s/**"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install -y ansible
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.K3S_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.K3S_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Run Ansible deployment
+        run: |
+          ansible-playbook -i ansible/inventory.yml ansible/deploy.yml \
+            -e k3s_host=${{ secrets.K3S_HOST }} \
+            -e k3s_user=${{ secrets.K3S_USER }}
