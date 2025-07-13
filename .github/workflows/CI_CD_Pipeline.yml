@@ -1,4 +1,4 @@
-name: Deploy to K3s
+name: CI/CD Pipeline
 
 on:
   push:
@@ -10,11 +10,19 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
+
+      - name: Docker Login
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build & Push Docker Image
+        run: |
+          docker build -t akash2061/email-check:latest ./App
+          docker push akash2061/email-check:latest
 
       - name: Install Ansible
         run: |
