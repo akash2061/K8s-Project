@@ -1,6 +1,6 @@
 ---
 - name: Deploy to K3s
-  hosts: localhost
+  hosts: k3s_servers
   become: true
   tasks:
     - name: Pull latest code from GitHub
@@ -10,17 +10,48 @@
         force: true
         version: main
 
-    - name: Apply Kubernetes manifests
-      kubernetes.core.k8s:
-        kubeconfig: /etc/rancher/k3s/k3s.yaml
-        state: present
-        src: /root/K8s-Project/k8s/k8s.yml
+    - name: Check if Kubernetes manifests would change anything
+      ansible.builtin.shell: |
+        kubectl diff -f /root/K8s-Project/k8s/k8s.yml
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+      register: kubectl_diff
+      changed_when: kubectl_diff.rc == 1
+      failed_when: kubectl_diff.rc not in [0, 1]
+
+    - name: Apply Kubernetes manifests using kubectl
+      ansible.builtin.shell: |
+        kubectl apply -f /root/K8s-Project/k8s/k8s.yml
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+      when: kubectl_diff.rc == 1
+      changed_when: kubectl_diff.rc == 1
+
+    - name: Wait for deployment to be ready
+      ansible.builtin.shell: |
+        kubectl rollout status deployment/email-check --timeout=300s
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+      changed_when: false
 
     - name: Check deployment status
       ansible.builtin.command: kubectl get pods -l app=email-check
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
       register: pod_status
       changed_when: false
 
     - name: Show deployment status
       ansible.builtin.debug:
         msg: "{{ pod_status.stdout }}"
+
+    - name: Check HPA status
+      ansible.builtin.command: kubectl get hpa
+      environment:
+        KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+      register: hpa_status
+      changed_when: false
+
+    - name: Show HPA status
+      ansible.builtin.debug:
+        msg: "{{ hpa_status.stdout }}"
