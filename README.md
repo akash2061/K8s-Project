@@ -16,8 +16,8 @@ This project demonstrates a complete CI/CD pipeline that automatically builds, c
                           │                                       ▲
                           ▼                                       │
                    ┌──────────────┐                        ┌─────────────┐
-                   │   Ansible    │────────────────────────▶│  Remote     │
-                   │  Playbook    │         SSH             │  Server     │
+                   │   Ansible    │───────────────────────▶│  Remote     │
+                   │  Playbook    │         SSH            │  Server     │
                    └──────────────┘                        └─────────────┘
 ```
 
@@ -255,8 +255,9 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 🔗 Links
 
-- **Docker Hub**: `https://hub.docker.com/r/akash2061/email-check`
-- **GitHub Repository**: `https://github.com/akash2061/K8s-Project`
+- **[GitHub](https://github.com/akash2071)**
+- **[LinkedIn](https://www.linkedin.com/in/akash2061/)**
+- **[Docker Hub](https://hub.docker.com/r/akash2061/email-check)**
 
 ---
 
