@@ -2,6 +2,8 @@
 
 A fully automated DevOps pipeline for deploying an email breach checking service to Kubernetes using Docker, GitHub Actions, and Ansible.
 
+[![CI/CD Pipeline](https://github.com/akash2061/K8s-Project/actions/workflows/CI_CD_Pipeline.yml/badge.svg)](https://github.com/akash2061/K8s-Project/actions/workflows/CI_CD_Pipeline.yml)
+
 ## 🚀 Project Overview
 
 This project demonstrates a complete CI/CD pipeline that automatically builds, containerizes, and deploys a Next.js email breach checking application to a K3s cluster using modern DevOps practices.
