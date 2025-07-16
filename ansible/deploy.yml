@@ -42,24 +42,6 @@
         kubectl rollout status deployment/email-check --timeout=300s
       changed_when: false
 
-    # - name: Wait for resources to be fully deleted
-    #   ansible.builtin.shell: |
-    #     kubectl wait --for=delete pod -l app=email-check --timeout=60s
-    #   environment:
-    #     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
-    #   changed_when: false
-    #   failed_when: false
-
-    - name: Apply fresh Kubernetes manifests
-      ansible.builtin.shell: |
-        kubectl apply -f /root/K8s-Project/k8s/k8s.yml
-      changed_when: true
-
-    - name: Wait for deployment to be ready
-      ansible.builtin.shell: |
-        kubectl rollout status deployment/email-check --timeout=300s
-      changed_when: false
-
     - name: Wait for pods to be running
       ansible.builtin.shell: |
         kubectl wait --for=condition=ready pod -l app=email-check --timeout=120s
