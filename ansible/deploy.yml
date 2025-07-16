@@ -5,6 +5,7 @@
   environment:
     KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   tasks:
+    # ? To improve time efficiency, don't clone entire repo. Just curl the k8s.yml file.
     - name: Pull latest code from GitHub
       ansible.builtin.git:
         repo: https://github.com/akash2061/K8s-Project.git
