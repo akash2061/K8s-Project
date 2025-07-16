@@ -17,6 +17,7 @@ spec:
       containers:
         - name: email-check
           image: akash2061/email-check:latest
+          imagePullPolicy: Always #! Rolling Update
           ports:
             - containerPort: 80
           resources:

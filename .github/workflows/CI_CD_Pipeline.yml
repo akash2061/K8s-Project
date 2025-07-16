@@ -1,12 +1,13 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "App/**"
-      - "k8s/**"
+  #! Manually triggered workflow!
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - "App/**"
+  #     - "k8s/**"
   workflow_dispatch:
 
 jobs:

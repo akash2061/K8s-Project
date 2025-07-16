@@ -12,20 +12,35 @@
         force: true
         version: main
 
-    - name: Delete existing deployment (if exists)
+    # - name: Delete existing deployment (if exists)
+    #   ansible.builtin.shell: |
+    #     kubectl delete deployment email-check --ignore-not-found=true --force
+    #   changed_when: true
+
+    # - name: Delete existing service (if exists)
+    #   ansible.builtin.shell: |
+    #     kubectl delete service email-check-service --ignore-not-found=true --force
+    #   changed_when: true
+
+    # - name: Delete existing HPA (if exists)
+    #   ansible.builtin.shell: |
+    #     kubectl delete hpa email-check-hpa --ignore-not-found=true --force
+    #   changed_when: true
+
+    - name: Apply Kubernetes manifests (rolling update)
       ansible.builtin.shell: |
-        kubectl delete deployment email-check --ignore-not-found=true --force
+        kubectl apply -f /root/K8s-Project/k8s/k8s.yml
       changed_when: true
 
-    - name: Delete existing service (if exists)
+    - name: Force rolling update to pull latest image
       ansible.builtin.shell: |
-        kubectl delete service email-check-service --ignore-not-found=true --force
+        kubectl rollout restart deployment/email-check
       changed_when: true
 
-    - name: Delete existing HPA (if exists)
+    - name: Wait for rollout to complete
       ansible.builtin.shell: |
-        kubectl delete hpa email-check-hpa --ignore-not-found=true --force
-      changed_when: true
+        kubectl rollout status deployment/email-check --timeout=300s
+      changed_when: false
 
     # - name: Wait for resources to be fully deleted
     #   ansible.builtin.shell: |
