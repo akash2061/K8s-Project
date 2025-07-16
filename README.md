@@ -257,7 +257,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 🔗 Links
 
-- **[GitHub](https://github.com/akash2071)**
+- **[GitHub](https://github.com/akash2061)**
 - **[LinkedIn](https://www.linkedin.com/in/akash2061/)**
 - **[Docker Hub](https://hub.docker.com/r/akash2061/email-check)**
 
